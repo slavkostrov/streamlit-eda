@@ -1,41 +1,39 @@
-import streamlit as st
-import seaborn as sns
-import pandas as pd
 from pathlib import Path
-import matplotlib.pyplot as plt
-import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
+
 import joblib
+import numpy as np
+import pandas as pd
+import plotly.express as px
+import streamlit as st
 
 COLUMN_EMOJI = {
-    'CREDIT': '💳',
-    'GEN_TITLE': '👩‍💼',
-    'MARITAL_STATUS': '💑',
-    'AGE': '👴',
-    'SOCSTATUS_PENS_FL': '📜',
-    'REG_ADDRESS_PROVINCE': '🏠',
-    'DEPENDANTS': '👨‍👩‍👦‍👦',
-    'OWN_AUTO': '🚗',
-    'GEN_INDUSTRY': '🏭',
-    'EDUCATION': '📚',
-    'SOCSTATUS_WORK_FL': '👔',
-    'JOB_DIR': '💼',
-    'TARGET': '🎯',
-    'FL_PRESENCE_FL': '🏠',
-    'TERM': '📅',
-    'AGREEMENT_RK': '📝',
-    'CHILD_TOTAL': '👶',
-    'POSTAL_ADDRESS_PROVINCE': '✉️',
-    'PERSONAL_INCOME': '💰',
-    'GENDER': '⚧️',
-    'FST_PAYMENT': '💳',
-    'WORK_TIME': '⏰',
-    'ID_CLIENT': '🆔',
-    'FAMILY_INCOME': '👨‍👩‍👦‍👦',
-    'FACT_ADDRESS_PROVINCE': '🏠',
-    'LOAN_NUM_TOTAL': '📝',
-    'LOAN_NUM_CLOSED': '🔒'
+    "CREDIT": "💳",
+    "GEN_TITLE": "👩‍💼",
+    "MARITAL_STATUS": "💑",
+    "AGE": "👴",
+    "SOCSTATUS_PENS_FL": "📜",
+    "REG_ADDRESS_PROVINCE": "🏠",
+    "DEPENDANTS": "👨‍👩‍👦‍👦",
+    "OWN_AUTO": "🚗",
+    "GEN_INDUSTRY": "🏭",
+    "EDUCATION": "📚",
+    "SOCSTATUS_WORK_FL": "👔",
+    "JOB_DIR": "💼",
+    "TARGET": "🎯",
+    "FL_PRESENCE_FL": "🏠",
+    "TERM": "📅",
+    "AGREEMENT_RK": "📝",
+    "CHILD_TOTAL": "👶",
+    "POSTAL_ADDRESS_PROVINCE": "✉️",
+    "PERSONAL_INCOME": "💰",
+    "GENDER": "⚧️",
+    "FST_PAYMENT": "💳",
+    "WORK_TIME": "⏰",
+    "ID_CLIENT": "🆔",
+    "FAMILY_INCOME": "👨‍👩‍👦‍👦",
+    "FACT_ADDRESS_PROVINCE": "🏠",
+    "LOAN_NUM_TOTAL": "📝",
+    "LOAN_NUM_CLOSED": "🔒",
 }
 
 COLUMNS_DESCRIPTION = """- `CREDIT` — сумма последнего кредита клиента (в рублях).
@@ -67,11 +65,12 @@ COLUMNS_DESCRIPTION = """- `CREDIT` — сумма последнего кред
 - `LOAN_NUM_CLOSED` — количество закрытых кредитов."""
 
 COLUMN_TO_DESCRIPTION = {
-    row.split()[1].strip()[1:-1]: row.split(" — ", maxsplit=1)[-1] for row in COLUMNS_DESCRIPTION.split("\n")
+    row.split()[1].strip()[1:-1]: row.split(" — ", maxsplit=1)[-1]
+    for row in COLUMNS_DESCRIPTION.split("\n")
 }
 
 BINARY_COLUMNS = [
-    "SOCSTATUS_PENS_FL", 
+    "SOCSTATUS_PENS_FL",
     "SOCSTATUS_WORK_FL",
     "TARGET",
     "FL_PRESENCE_FL",
@@ -95,9 +94,14 @@ CATEGORICAL_COLUMNS = [
 
 ID_COLUMNS = ["AGREEMENT_RK", "WORK_TIME", "ID_CLIENT"]
 
-DATA = data = st.cache_data(pd.read_csv)(Path(__name__).parent / "data" / "PREPARED_DATA.csv")
-NUMERIC_COLUMNS = list(set(DATA.columns) - set(BINARY_COLUMNS) - set(CATEGORICAL_COLUMNS) - set(ID_COLUMNS))
+DATA = data = st.cache_data(pd.read_csv)(
+    Path(__name__).parent / "data" / "PREPARED_DATA.csv"
+)
+NUMERIC_COLUMNS = list(
+    set(DATA.columns) - set(BINARY_COLUMNS) - set(CATEGORICAL_COLUMNS) - set(ID_COLUMNS)
+)
 MODEL = joblib.load(Path(__name__).parent / "models" / "model.pkl")
+
 
 def get_list_with_desctiption(columns: list[str]) -> str:
     final_str = ""
@@ -106,13 +110,18 @@ def get_list_with_desctiption(columns: list[str]) -> str:
         final_str += f"* `{column}` — {description}\n"
     return final_str
 
-not_id_columns = [column for column in data.columns if "ID" not in column and "RK" not in column]
+
+not_id_columns = [
+    column for column in data.columns if "ID" not in column and "RK" not in column
+]
 
 st.title("EDA данных о клиентах банка")
-st.info("""
+st.info(
+    """
         🚨 Этот дашбоард содержит разведочный анализ данных о клиентах банка, включая множество графиков
         по всем имеющимся колонкам, а также возможность построить прогноз для произвольных данных!
-""")
+"""
+)
 
 st.sidebar.title("О дашборде")
 st.sidebar.info("EDA данных о клиентах банка")
@@ -122,19 +131,22 @@ tab1, tab2 = st.tabs(["EDA", "Предсказание"])
 with tab1:
     if st.sidebar.checkbox("⚡Случайная выборка данных", value=True):
         st.subheader("⚡ Случайная выборка строк из таблицы")
-        st.write("Посмотрим на то как выглядят данные, для этого возьмём случайные 5 строк.")
+        st.write(
+            "Посмотрим на то как выглядят данные, для этого возьмём случайные 5 строк."
+        )
         if st.button("🔄 Обновить выборку"):
             st.dataframe(data.sample(5), hide_index=True)
         else:
             st.dataframe(data.sample(5), hide_index=True)
-            
+
         if st.checkbox("Показать описание колонок", value=False):
             st.info(COLUMNS_DESCRIPTION)
 
-
     if st.sidebar.checkbox("📈 Статистики для колонок", value=True):
         st.subheader("📈 Статистики для колонок")
-        st.write("Теперь выведем статистики для колонок. Рассмотрим все колонки - категориальные и числовые.")
+        st.write(
+            "Теперь выведем статистики для колонок. Рассмотрим все колонки - категориальные и числовые."
+        )
         st.dataframe(data.describe(include="all"))
         st.write("`Вывод`: можно выделить определенные группы признаков.")
         st.write("Бинарные:")
@@ -146,44 +158,77 @@ with tab1:
         st.write("Столбцы-идентификаторы:")
         st.write(get_list_with_desctiption(ID_COLUMNS))
 
-    # Distribution plot for numeric columns
+    if st.sidebar.checkbox("💑 Попарные scatter графики", value=True):
+        st.write(
+            "Построим попарные графики, в том числе с целевой переменной, чтобы изучить зависимость."
+        )
+        col1, col2 = st.columns(2)
+        with col1:
+            first_column = st.selectbox(
+                "Первый столбец", list(DATA.columns), list(DATA.columns).index("TARGET")
+            )
+
+        with col2:
+            second_column = st.selectbox(
+                "Второй столбец",
+                list(
+                    set(DATA.columns)
+                    - {
+                        first_column,
+                    }
+                ),
+            )
+        fig = px.scatter(
+            data,
+            x=first_column,
+            y=second_column,
+            title=f"{first_column} VS {second_column}",
+        )
+        st.plotly_chart(fig)
+
     if st.sidebar.checkbox("📶 Распределения для числовых колонок", value=True):
         st.subheader("📶 Распределения для числовых колонок")
-        selected_numeric_col = st.selectbox("Выберите столбце для отрисовки гистограммы:", NUMERIC_COLUMNS)
+        selected_numeric_col = st.selectbox(
+            "Выберите столбце для отрисовки гистограммы:", NUMERIC_COLUMNS
+        )
         st.write(COLUMN_TO_DESCRIPTION.get(selected_numeric_col, "").capitalize())
         if st.checkbox("Добавить разделение по целевой переменной", value=False):
             kwargs = dict(color="TARGET")
         else:
-            kwargs = dict()    
-        
+            kwargs = dict()
+
         fig = px.histogram(
             data,
             x=selected_numeric_col,
-            marginal='box',
+            marginal="box",
             title=f"Гистограмма значений {selected_numeric_col}.",
             **kwargs,
         )
         st.plotly_chart(fig)
-        st.write("""`Вывод:` однозначно можно сказать, что в данных есть выбросы, 
+        st.write(
+            """`Вывод:` однозначно можно сказать, что в данных есть выбросы, 
                  например это прослеживается, если посмотреть на доход - основная вероятностная масса
                  сосредоточена на интервале до 50_000, при этом есть значения большие 200_000. 
                  Данный факт нужно будет учесть при построении модели.
                  В остальном - нельзя сказать, что при разделении распределений по целевой переменной распределения сильно
                  меняются - вероятно это связано с тем, что выборка крайне несбалансированная относительно целевой переменной.
-        """)
-        
-    # Correlation matrix
+        """
+        )
+
     if st.sidebar.checkbox("🔗 Матрица корреляций", value=True):
         st.subheader("🔗 Матрица корреляций")
-        st.info("""Построим тепловую карту корреляций для числовых значений.
+        st.info(
+            """Построим тепловую карту корреляций для числовых значений.
                  Это может помочь понять связь переменных с целевой переменной, а также между собой."""
         )
-        numeric_df = data.loc[:, NUMERIC_COLUMNS + BINARY_COLUMNS].select_dtypes(np.number)
+        numeric_df = data.loc[:, NUMERIC_COLUMNS + BINARY_COLUMNS].select_dtypes(
+            np.number
+        )
         corr = numeric_df.corr()
         colors = [
-            [0.0, 'blue'],
-            [0.5, 'white'],
-            [1.0, 'red'],
+            [0.0, "blue"],
+            [0.5, "white"],
+            [1.0, "red"],
         ]
         fig = px.imshow(
             corr,
@@ -193,24 +238,29 @@ with tab1:
             title="Тепловая карта для матрицы корреляций.",
         )
         st.plotly_chart(fig)
-        st.write("""`Вывод:` в целом сильного влияния на целевую переменную не наблюдается, при этом 
+        st.write(
+            """`Вывод:` в целом сильного влияния на целевую переменную не наблюдается, при этом 
                  определенная отрицательная корреляция видна у возраста. Между собой признаки тоже не сильно скоррелированы
                  за исключения янвых примеров (например, понятно, что чем больше кредитов, тем в среднем больше закрытых кредитов).
-        """)
+        """
+        )
 
-    # Count plot for categorical columns
-    if st.sidebar.checkbox('📊 Распределение значений в категориальных и бинарных колонках', value=True):
-        st.subheader('📊 Распределение значений в категориальных и бинарных колонках')
+    if st.sidebar.checkbox(
+        "📊 Распределение значений в категориальных и бинарных колонках", value=True
+    ):
+        st.subheader("📊 Распределение значений в категориальных и бинарных колонках")
         categorical_cols = CATEGORICAL_COLUMNS + BINARY_COLUMNS
-        selected_categorical_col = st.selectbox('Select a categorical column', categorical_cols)  
-        st.write(COLUMN_TO_DESCRIPTION.get(selected_categorical_col, "").capitalize())  
+        selected_categorical_col = st.selectbox(
+            "Select a categorical column", categorical_cols
+        )
+        st.write(COLUMN_TO_DESCRIPTION.get(selected_categorical_col, "").capitalize())
         df = data[[selected_categorical_col, "TARGET"]].astype(str)
         if st.checkbox("Добавить разделение по целевой переменной ", value=False):
             kwargs = dict(color="TARGET")
         else:
-            kwargs = dict()  
+            kwargs = dict()
         fig = px.histogram(
-            df, 
+            df,
             x=selected_categorical_col,
             title=f"Распределение значений в {selected_categorical_col}.",
             **kwargs,
@@ -219,10 +269,12 @@ with tab1:
 
 
 with tab2:
-    st.write("""
+    st.write(
+        """
              На данной вкладки вы можете получить предсказания для любой комбинации параметров,
              Для этого просто заполните все поля и нажмите кнопку `Предсказать`.
-    """)
+    """
+    )
     d = {}
     for column in sorted(DATA.columns, key=lambda column: column in NUMERIC_COLUMNS):
         if column == "TARGET":
@@ -238,7 +290,7 @@ with tab2:
                 f"{COLUMN_EMOJI.get(column, '')} {column}",
                 DATA[column].unique(),
             )
-    
+
     if st.button("Предсказать!"):
         data_to_predict = pd.DataFrame([d])
         predict = MODEL.predict(data_to_predict)[0]
@@ -249,4 +301,3 @@ with tab2:
             Итоговое предсказаний - {predict} с вероятностью {predict_proba}.
             """
         )
-    
