@@ -1,10 +1,10 @@
 # Дашборд для данных о клиентах банка
 
 Репозиторий содержит:
-- (ноутбук)[notebooks/prepare_data.ipynb] с подготовкой данных и обучением модели;
-- streamlit (приложение)[streamlit_eda/app.py] с EDA и возможностью прогнозирования.
+- [ноутбук](notebooks/prepare_data.ipynb) с подготовкой данных и обучением модели;
+- streamlit [приложение](streamlit_eda/app.py) с EDA и возможностью прогнозирования.
 
-Развёрнутое приложение доступно по адресу (https://eda-bank.streamlit.app/)[https://eda-bank.streamlit.app/].
+Развёрнутое приложение доступно по адресу [https://eda-bank.streamlit.app/](https://eda-bank.streamlit.app/).
 
 ### Разработка
 
