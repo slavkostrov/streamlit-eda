@@ -22,4 +22,4 @@ poetry run isort streamlit_eda/app.py
 ### Примеры
 
 ![Alt text](image.png)
-![Alt text](image-1.png)
+![Alt text](image-2.png)

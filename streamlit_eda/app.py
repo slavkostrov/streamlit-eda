@@ -276,20 +276,29 @@ with tab2:
     """
     )
     d = {}
+    current_columns = []
     for column in sorted(DATA.columns, key=lambda column: column in NUMERIC_COLUMNS):
-        if column == "TARGET":
+        if column == "TARGET" or column in ID_COLUMNS:
             continue
-        if column in NUMERIC_COLUMNS:
-            d[column] = st.slider(
-                label=f"{COLUMN_EMOJI.get(column, '')} {column}",
-                min_value=DATA[column].min(),
-                max_value=DATA[column].max(),
-            )
-        else:
-            d[column] = st.selectbox(
-                f"{COLUMN_EMOJI.get(column, '')} {column}",
-                DATA[column].unique(),
-            )
+        
+        if not current_columns:
+            current_columns.extend(st.columns(3))
+        
+        ctcol = current_columns[0]
+        current_columns = current_columns[1:]
+        
+        with ctcol:
+            if column in NUMERIC_COLUMNS:
+                d[column] = st.slider(
+                    label=f"{COLUMN_EMOJI.get(column, '')} {column}",
+                    min_value=DATA[column].min(),
+                    max_value=DATA[column].max(),
+                )
+            else:
+                d[column] = st.selectbox(
+                    f"{COLUMN_EMOJI.get(column, '')} {column}",
+                    DATA[column].unique(),
+                )
 
     if st.button("Предсказать!"):
         data_to_predict = pd.DataFrame([d])
