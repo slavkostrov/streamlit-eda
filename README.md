@@ -16,7 +16,7 @@ poetry install
 
 Для запуска приложения воспользуйтесь командой
 ```bash
-poetry run isort streamlit_eda/app.py 
+poetry run 
 ```
 
 ### Примеры
